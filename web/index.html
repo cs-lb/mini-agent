@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mini-agent</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">mini<span class="dim">-agent</span></div>
+  <button id="new-chat" class="btn-block">＋ 新建会话</button>
+  <div id="session-list" class="session-list"></div>
+  <div class="sidebar-footer">
+    <button id="open-settings" class="btn-ghost">模型与设置</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="picker" id="model-picker">
+      <button id="model-trigger" class="picker-trigger" type="button" title="切换模型">
+        <span id="model-trigger-label">选择模型</span>
+        <span id="model-trigger-hint" class="picker-hint"></span>
+        <span class="chev">⌄</span>
+      </button>
+      <div id="model-panel" class="picker-panel" hidden>
+        <div id="model-list" class="picker-list"></div>
+        <div class="picker-foot">
+          <button id="open-settings-from-picker" class="picker-foot-btn" type="button">✎ 配置自定义模型…</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="picker" id="skill-picker">
+      <button id="skill-trigger" class="picker-trigger" type="button" title="本会话启用的技能">
+        <span id="skill-trigger-label">技能</span>
+        <span id="skill-trigger-hint" class="picker-hint"></span>
+        <span class="chev">⌄</span>
+      </button>
+      <div id="skill-panel" class="picker-panel skill-panel" hidden>
+        <div class="panel-title">本会话启用的技能</div>
+        <div id="skill-list" class="picker-list"></div>
+        <div class="picker-foot">
+          <div id="skill-roots" class="skill-roots"></div>
+        </div>
+      </div>
+    </div>
+
+    <span id="status" class="status"></span>
+  </header>
+
+  <div id="messages" class="messages">
+    <div class="empty" id="empty-state">
+      <p>发送第一条消息开始。</p>
+      <p class="dim">未配置 API Key 时，先点左下角「模型与设置」。</p>
+    </div>
+  </div>
+
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="发消息…　Enter 发送，Shift+Enter 换行"></textarea>
+    <div class="composer-actions">
+      <button id="stop" class="btn-ghost" hidden>停止</button>
+      <button id="send" class="btn-primary">发送</button>
+    </div>
+  </div>
+</main>
+
+<div id="settings" class="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <span>模型与设置</span>
+      <button id="close-settings" class="btn-ghost">关闭</button>
+    </div>
+    <label>服务商
+      <select id="cfg-provider"></select>
+    </label>
+    <label>Base URL
+      <input id="cfg-base-url" type="text" placeholder="https://api.openai.com/v1">
+    </label>
+    <label>模型型号
+      <div class="row">
+        <input id="cfg-model" type="text" list="model-options" placeholder="deepseek-chat">
+        <button id="fetch-models" type="button" class="btn-ghost">拉取型号</button>
+      </div>
+      <datalist id="model-options"></datalist>
+      <span class="field-hint">可直接输入，也可点右侧箭头从候选里选；「拉取型号」会向服务商请求可用列表</span>
+    </label>
+    <label>API Key
+      <input id="cfg-api-key" type="password" placeholder="sk-…（仅保存在本机 ~/.mini-agent/config.json）">
+    </label>
+    <label>ReAct 最大步数
+      <input id="cfg-max-steps" type="number" min="1" max="64">
+    </label>
+    <div class="modal-actions">
+      <span id="cfg-hint" class="dim"></span>
+      <button id="test-connection" class="btn-ghost">保存并测试</button>
+      <button id="save-settings" class="btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

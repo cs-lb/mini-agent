@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 虚拟环境（本地依赖，不入库；用 requirements.txt 复现）
+.venv/
+venv/
+env/
+ENV/
+
+# 测试与缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------- 敏感信息
+# 真实密钥只存在 ~/.mini-agent/config.json，绝不入库。
+# 这里再兜一层，防止有人把本地配置或会话复制进项目目录。
+.env
+.env.*
+config.local.json
+*.local.json
+sessions/
+*.jsonl
+
+# ---------------------------------------------------------------- 编辑器 / 系统
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
