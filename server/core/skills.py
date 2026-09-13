@@ -99,22 +99,35 @@ def roots_info() -> list[dict[str, str]]:
 
 
 def build_prompt_block(active: list[str]) -> str:
-    """把已激活技能的正文 + 未激活技能的目录，拼成一段追加到 system prompt 的文本。"""
+    """把已激活技能的正文 + 未激活技能的目录，拼成一段追加到 system prompt 的文本。
+
+    两段是**相互独立**的：目录（约 30 token/个）只要磁盘上有技能就注入，
+    正文只在被激活时才注入。这样模型始终「知道有哪些技能」，
+    而「技能内容」按需付费 —— 这才是渐进披露该有的形状。
+
+    反面写法（曾经的样子）：`if not active_names: return ""`。
+    那会让「一个都没勾」的默认态把目录一起吞掉，
+    模型完全不知道技能存在，目录变成了激活态的副产物。
+    """
     catalog = {skill["name"]: skill for skill in scan()}
     active_names = [name for name in dict.fromkeys(active) if name in catalog]  # 去重且保序
-    if not active_names:
+    idle = [skill for name, skill in catalog.items() if name not in active_names]
+
+    if not active_names and not idle:  # 磁盘上一个技能都没有：不注入空壳
         return ""
 
-    parts: list[str] = [
-        "## 已激活技能",
-        "",
-        "用户为本会话显式启用了以下技能。它们的要求优先于你的默认习惯，请严格照做：",
-        "",
-    ]
-    for name in active_names:
-        parts += [f"### 技能：{name}", "", catalog[name]["body"], ""]
+    parts: list[str] = []
 
-    idle = [skill for name, skill in catalog.items() if name not in active_names]
+    if active_names:
+        parts += [
+            "## 已激活技能",
+            "",
+            "用户为本会话显式启用了以下技能。它们的要求优先于你的默认习惯，请严格照做：",
+            "",
+        ]
+        for name in active_names:
+            parts += [f"### 技能：{name}", "", catalog[name]["body"], ""]
+
     if idle:
         parts += [
             "## 其他可用技能（本会话未激活）",
